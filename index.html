@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>ENDUDS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<style>
+:root{--bg:#f7f6fb;--card:#fff;--ink:#1c1b22;--mute:#76748a;--line:#e9e7f2;--ac:#6d4aff;--ok:#16a672;--bad:#e5484d}
+@media (prefers-color-scheme:dark){:root{--bg:#121117;--card:#1c1b24;--ink:#f3f2f8;--mute:#9a98ad;--line:#2b2935;--ac:#8f78ff}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+#app{max-width:520px;margin:0 auto;padding:calc(env(safe-area-inset-top) + 16px) 16px calc(env(safe-area-inset-bottom) + 90px)}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:3px solid var(--ac);outline-offset:2px}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.logo{margin:0;font-size:22px;font-weight:800;letter-spacing:-.02em;color:var(--ac)}
+.hi{margin:0;color:var(--mute);font-size:14px}
+.gear{width:42px;height:42px;border-radius:50%;background:var(--card);border:1px solid var(--line);font-size:18px}
+h2{font-size:15px;color:var(--mute);font-weight:600;margin:24px 4px 8px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px}
+.tab{display:none}.tab.on{display:block}
+.hero{padding:22px 20px;text-align:center}
+.hero small{color:var(--mute);font-size:14px}
+.big{font-size:clamp(40px,13vw,56px);font-weight:800;letter-spacing:-.03em;margin:4px 0 12px}
+.big.bad{color:var(--bad)}
+.bar{height:8px;border-radius:8px;background:var(--line);overflow:hidden;margin-bottom:10px}
+.bar i{display:block;height:100%;background:var(--ac);border-radius:8px;transition:width .4s}
+.bar.bad i{background:var(--bad)}
+.quick{display:flex;gap:8px;padding:6px;margin-top:12px}
+.quick input{flex:1;min-width:0;border:0;background:none;color:var(--ink);font:inherit;padding:10px}
+.btn{background:var(--ac);color:#fff;border-radius:12px;padding:10px 18px;font-weight:600}
+.hint{color:var(--mute);font-size:13px;margin:8px 4px 0}
+.row{display:flex;align-items:center;gap:12px;padding:12px 14px;margin-bottom:8px}
+.n{flex:1;min-width:0}
+.n b{display:block;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.n span{font-size:13px;color:var(--mute)}
+.n span.late{color:var(--bad)}
+.amt{font-weight:700}
+.chk{width:28px;height:28px;border-radius:50%;border:2px solid var(--line);flex:none;display:grid;place-items:center;font-weight:800;color:#fff}
+.paid .chk{background:var(--ok);border-color:var(--ok)}
+.paid .n b,.paid .amt{opacity:.45;text-decoration:line-through}
+.mini{font-size:13px;color:var(--ac);padding:6px 8px;font-weight:600}
+.empty{color:var(--mute);text-align:center;padding:22px 8px}
+.mh{display:flex;align-items:center;justify-content:space-between;margin:6px 0 12px}
+.mh h2{margin:0;font-size:18px;color:var(--ink);text-transform:capitalize}
+.arrow{width:40px;height:40px;border-radius:50%;background:var(--card);border:1px solid var(--line);font-size:18px}
+.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.wd{text-align:center;font-size:12px;color:var(--mute)}
+.day{aspect-ratio:1;border-radius:12px;background:var(--card);border:1px solid var(--line);position:relative;font-weight:600}
+.day.off{visibility:hidden}
+.day.today{border-color:var(--ac);color:var(--ac)}
+.day.sel{background:var(--ac);border-color:var(--ac);color:#fff}
+.day i{position:absolute;left:50%;bottom:5px;width:6px;height:6px;margin-left:-3px;border-radius:50%;background:var(--bad)}
+.day i.ok{background:var(--ok)}
+.day.sel i{background:#fff}
+nav{position:fixed;left:0;right:0;bottom:0;display:flex;background:var(--card);border-top:1px solid var(--line);padding:6px 8px calc(env(safe-area-inset-bottom) + 6px);z-index:5}
+nav button{flex:1;padding:10px;font-size:14px;font-weight:600;color:var(--mute);border-radius:12px}
+nav button.on{color:var(--ac)}
+.fab{position:fixed;right:max(16px,calc(50% - 244px));bottom:calc(env(safe-area-inset-bottom) + 76px);width:56px;height:56px;border-radius:50%;background:var(--ac);color:#fff;font-size:30px;box-shadow:0 8px 20px rgba(109,74,255,.4);z-index:6}
+dialog{border:0;padding:0;background:transparent;width:100%;max-width:520px;margin:auto auto 0;max-height:94dvh;color:var(--ink)}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+.sheet{background:var(--card);border-radius:24px 24px 0 0;padding:20px 18px calc(env(safe-area-inset-bottom) + 20px);display:grid;gap:12px}
+.sheet h3{margin:0;font-size:20px}
+label{display:grid;gap:4px;font-size:13px;color:var(--mute)}
+input[type=text],input[type=number],input[type=date],textarea,select{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px;color:var(--ink);font:inherit;font-size:16px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);background:var(--bg);border-radius:12px;padding:3px;gap:3px}
+.seg label{margin:0}
+.seg input{position:absolute;opacity:0}
+.seg span{display:block;text-align:center;padding:9px 4px;border-radius:10px;font-size:14px;font-weight:600;color:var(--mute)}
+.seg input:checked+span{background:var(--card);color:var(--ac);box-shadow:0 1px 4px rgba(0,0,0,.12)}
+.seg input:focus-visible+span{outline:3px solid var(--ac)}
+.total{font-size:14px;color:var(--mute);margin:-4px 2px 0}
+.ghost{border:1px solid var(--line);border-radius:14px;padding:13px;font-weight:600}
+.danger{color:var(--bad)}
+.toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 12px);transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:14px;font-weight:600;z-index:20}
+
+body{background:linear-gradient(180deg,#ece6ff 0,#f7f5fc 320px) fixed,var(--bg)}
+@media (prefers-color-scheme:dark){body{background:linear-gradient(180deg,#241a45 0,#121117 340px) fixed,var(--bg)}}
+.card{border:0;box-shadow:0 4px 18px rgba(60,30,140,.08)}
+@media (prefers-color-scheme:dark){.card{box-shadow:none;border:1px solid var(--line)}}
+.logo{font-size:26px;background:linear-gradient(90deg,#6d4aff,#ff5fa0);-webkit-background-clip:text;background-clip:text;color:transparent}
+#hero{background:linear-gradient(135deg,#6d4aff,#b44dff 55%,#ff6fa5);color:#fff;padding:28px 20px;border-radius:26px;box-shadow:0 18px 40px -12px rgba(109,74,255,.55)}
+#hero.bad{background:linear-gradient(135deg,#e5484d,#ff8a5c);box-shadow:0 18px 40px -12px rgba(229,72,77,.5)}
+#hero small{color:rgba(255,255,255,.85)}
+#hero .bar{background:rgba(255,255,255,.28)}#hero .bar i{background:#fff}
+#hero .btn{background:#fff;color:#6d4aff}
+.big{font-size:clamp(44px,14vw,60px)}
+.quick{border-radius:20px}
+.row{border-radius:20px;padding:14px}
+.chk{width:30px;height:30px;border-width:2.5px}
+h2{color:var(--ink);font-size:17px;font-weight:700}
+nav{left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom) + 10px);border:0;border-radius:26px;box-shadow:0 10px 30px rgba(60,30,140,.18);padding:6px}
+nav button{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:12px}
+nav button b{font-size:20px;filter:grayscale(1);opacity:.55}
+nav button.on{background:rgba(109,74,255,.12)}nav button.on b{filter:none;opacity:1}
+.fab{bottom:calc(env(safe-area-inset-bottom) + 92px);background:linear-gradient(135deg,#6d4aff,#ff5fa0)}
+.day.sel{background:linear-gradient(135deg,#6d4aff,#b44dff)}
+#app{padding-bottom:calc(env(safe-area-inset-bottom) + 110px)}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <h1 class="logo">ENDUDS</h1>
+    <button class="gear" id="gear" aria-label="Ajustes">⚙</button>
+  </header>
+
+  <section class="tab on" id="t-hoje">
+    <div class="card hero" id="hero"></div>
+    <div class="card quick">
+      <input id="q" placeholder="mercado 45 · luz 150 dia 10 · tv 2000 10x" aria-label="Lançamento rápido">
+      <button class="btn" id="qgo">Lançar</button>
+    </div>
+    <p class="hint">Sem “dia” é gasto de hoje. Com “dia 10” é conta. Com “10x” é compra parcelada (valor total).</p>
+    <h2>Próximas contas</h2><div id="next"></div>
+    <h2>Gastos de hoje</h2><div id="spent"></div>
+  </section>
+
+  <section class="tab" id="t-contas">
+    <div class="mh"><button class="arrow" id="pm" aria-label="Mês anterior">‹</button><h2 id="mt"></h2><button class="arrow" id="nm" aria-label="Próximo mês">›</button></div>
+    <div class="card hero" style="padding:14px" id="msum"></div>
+    <h2>Contas do mês</h2><div id="cl"></div>
+  </section>
+
+  <section class="tab" id="t-cal">
+    <div class="mh"><button class="arrow" id="pm2" aria-label="Mês anterior">‹</button><h2 id="mt2"></h2><button class="arrow" id="nm2" aria-label="Próximo mês">›</button></div>
+    <div class="grid" id="wd"></div>
+    <div class="grid" id="grid" style="margin-top:4px"></div>
+    <h2 id="dt" style="text-transform:capitalize"></h2><div id="dl"></div>
+    <button class="ghost" id="ics" style="width:100%;margin-top:8px">Levar as contas pro calendário do celular</button>
+  </section>
+</div>
+
+<button class="fab" id="fab" aria-label="Nova conta">+</button>
+<nav>
+  <button data-t="hoje" class="on"><b>🏠</b>Início</button>
+  <button data-t="contas"><b>🧾</b>Contas</button>
+  <button data-t="cal"><b>📅</b>Calendário</button>
+</nav>
+
+<dialog id="dbill"><form class="sheet" id="fbill" method="dialog">
+  <h3 id="bt">Nova conta</h3>
+  <div class="seg" role="radiogroup" aria-label="Tipo">
+    <label><input type="radio" name="k" value="um" checked><span>Única</span></label>
+    <label><input type="radio" name="k" value="mes"><span>Todo mês</span></label>
+    <label><input type="radio" name="k" value="parc"><span>Parcelada</span></label>
+  </div>
+  <label>Nome<input type="text" id="bn" required placeholder="Luz, aluguel, geladeira…"></label>
+  <div class="two">
+    <label><span id="vl">Valor (R$)</span><input type="number" id="bv" step="0.01" min="0" inputmode="decimal" required></label>
+    <label><span id="dl2">Vencimento</span><input type="date" id="bd" required></label>
+  </div>
+  <div id="pbox" hidden>
+    <div class="two">
+      <label>Nº de parcelas<input type="number" id="bn2" min="2" max="60" value="10" inputmode="numeric"></label>
+      <label>O valor acima é<select id="bm"><option value="tot">Total da compra</option><option value="par">Valor da parcela</option></select></label>
+    </div>
+    <p class="total" id="ptot"></p>
+  </div>
+  <label>Código de barras ou PIX (opcional)<textarea id="bc" rows="2" placeholder="Cole aqui. Se for boleto, eu leio valor e data."></textarea></label>
+  <button class="btn" type="submit" style="padding:14px">Salvar</button>
+  <button class="ghost danger" type="button" id="bdel" hidden>Apagar conta</button>
+  <button class="ghost" type="button" data-close>Cancelar</button>
+</form></dialog>
+
+<dialog id="dset"><form class="sheet" method="dialog">
+  <h3>Ajustes</h3>
+  <div class="two">
+    <label>Seu nome<input type="text" id="sn"></label>
+    <label>Renda do mês (R$)<input type="number" id="si" step="0.01" min="0" inputmode="decimal"></label>
+  </div>
+  <div id="acc" hidden style="display:grid;gap:10px;padding:14px;border-radius:16px;background:var(--bg)">
+    <b>Conta na nuvem</b>
+    <div id="accin" style="display:grid;gap:10px">
+      <input type="text" id="ae" placeholder="E-mail" inputmode="email" autocomplete="email">
+      <input type="password" id="ap" placeholder="Senha (mín. 6 caracteres)" autocomplete="current-password" style="width:100%;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;color:var(--ink);font:inherit;font-size:16px">
+      <div class="two"><button class="btn" type="button" id="ain">Entrar</button><button class="ghost" type="button" id="aup">Criar conta</button></div>
+    </div>
+    <div id="accout" hidden style="display:grid;gap:10px"><span id="accmail"></span><button class="ghost" type="button" id="aout">Sair da conta</button></div>
+    <p class="total" id="accst" style="margin:0"></p>
+  </div>
+  <button class="ghost" type="button" id="snot">Ligar avisos de vencimento</button>
+  <button class="ghost" type="button" id="sexp">Salvar backup</button>
+  <button class="ghost" type="button" id="simp">Restaurar backup</button>
+  <input type="file" id="file" accept="application/json" hidden>
+  <button class="btn" type="submit" style="padding:14px">Pronto</button>
+</form></dialog>
+
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const KEY='enduds.v1';
+let S={name:'',income:0,bills:[],spent:[],notified:{}};
+try{S={...S,...JSON.parse(localStorage.getItem(KEY)||'{}')}}catch(e){}
+const save=()=>{S.ts=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}push()};
+const brl=n=>n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+const pad=n=>String(n).padStart(2,'0');
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const iso=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const dim=(y,m)=>new Date(y,m+1,0).getDate();
+const uid=()=>Math.random().toString(36).slice(2,9);
+const buzz=(n=12)=>navigator.vibrate&&navigator.vibrate(n);
+let view=new Date();view.setDate(1);
+let selDay=iso(new Date());
+function toast(t){const e=document.createElement('div');e.className='toast';e.textContent=t;document.body.append(e);setTimeout(()=>e.remove(),2200)}
+
+/* contas de um mês (única, todo mês ou parcelada) */
+function occ(y,m){const out=[];
+  for(const b of S.bills){const kind=b.kind||(b.rec?'mes':'um');
+    const [by,bm,bd]=b.due.split('-').map(Number);
+    const idx=y*12+m-(by*12+bm-1), n=kind==='parc'?b.n:kind==='mes'?Infinity:1;
+    if(idx>=0&&idx<n){const day=Math.min(bd,dim(y,m)),key=`${y}-${pad(m+1)}`;
+      out.push({b,kind,day,key,date:`${key}-${pad(day)}`,paid:!!(b.paid&&b.paid[key]),idx})}}
+  return out.sort((a,b)=>a.day-b.day)}
+
+function free(){const n=new Date(),y=n.getFullYear(),m=n.getMonth();
+  const bills=occ(y,m).reduce((s,o)=>s+o.b.amount,0),mk=`${y}-${pad(m+1)}`,td=iso(n);
+  const sp=S.spent.filter(x=>x.d.startsWith(mk));
+  const before=sp.filter(x=>x.d<td).reduce((s,x)=>s+x.v,0),today=sp.filter(x=>x.d===td).reduce((s,x)=>s+x.v,0);
+  const days=dim(y,m)-n.getDate()+1,per=(S.income-bills-before)/days;
+  return {per,left:per-today,today,days}}
+
+function rowBill(o){const late=!o.paid&&o.date<iso(new Date());
+  const dd=new Date(o.date+'T12:00').toLocaleDateString('pt-BR',{day:'numeric',month:'short'});
+  const tag=o.kind==='parc'?` · parcela ${o.idx+1}/${o.b.n}`:o.kind==='mes'?' · todo mês':'';
+  return `<div class="card row ${o.paid?'paid':''}">
+    <button class="chk" data-pay="${o.b.id}|${o.key}" aria-label="Marcar como paga">${o.paid?'✓':''}</button>
+    <div class="n" data-edit="${o.b.id}" tabindex="0" role="button"><b>${esc(o.b.name)}</b><span class="${late?'late':''}">${late?'Atrasada · ':''}${dd}${tag}</span></div>
+    ${o.b.code?`<button class="mini" data-copy="${o.b.id}">Copiar</button>`:''}
+    <div class="amt">${brl(o.b.amount)}</div></div>`}
+
+function render(){
+  const n=new Date();
+  const f=free();
+  $('#hero').className='card hero'+(S.income&&f.left<0?' bad':'');
+  $('#hero').innerHTML=!S.income?`<small>Primeiro passo</small><div class="big" style="font-size:28px">Informe sua renda</div><button class="btn" id="setinc">Informar renda</button>`
+   :`<small>${f.left<0?'Passou do limite de hoje':'Livre pra gastar hoje'}</small><div class="big">${brl(f.left)}</div>
+     <div class="bar"><i style="width:${f.per>0?Math.min(100,Math.max(0,f.today/f.per*100)):100}%"></i></div>
+     <small>Limite de ${brl(Math.max(f.per,0))} por dia · faltam ${f.days} dias no mês</small>`;
+  const si=$('#setinc');if(si)si.onclick=openSet;
+  const up=[];for(let k=0;k<2;k++){const d=new Date(n.getFullYear(),n.getMonth()+k,1);up.push(...occ(d.getFullYear(),d.getMonth()))}
+  const nx=up.filter(o=>!o.paid&&o.date>=iso(n)||!o.paid&&o.date<iso(n)&&o.key===iso(n).slice(0,7)).slice(0,4);
+  $('#next').innerHTML=nx.length?nx.map(rowBill).join(''):'<div class="empty">Nenhuma conta pendente.</div>';
+  const sp=S.spent.filter(x=>x.d===iso(n));
+  $('#spent').innerHTML=sp.length?sp.map(x=>`<div class="card row"><div class="n"><b>${esc(x.n)}</b></div><div class="amt">${brl(x.v)}</div><button class="mini" data-ds="${x.id}" aria-label="Apagar gasto">Apagar</button></div>`).join(''):'<div class="empty">Nenhum gasto hoje.</div>';
+  renderContas();renderCal();bind()}
+
+function renderContas(){const y=view.getFullYear(),m=view.getMonth(),os=occ(y,m);
+  $('#mt').textContent=view.toLocaleDateString('pt-BR',{month:'long',year:'numeric'});
+  const tot=os.reduce((s,o)=>s+o.b.amount,0),pg=os.filter(o=>o.paid).reduce((s,o)=>s+o.b.amount,0);
+  $('#msum').innerHTML=os.length?`<div style="display:flex;justify-content:space-around"><div><small>Total</small><div class="amt">${brl(tot)}</div></div><div><small>Pago</small><div class="amt" style="color:var(--ok)">${brl(pg)}</div></div><div><small>Falta</small><div class="amt">${brl(tot-pg)}</div></div></div>`:'<small>Sem contas neste mês</small>';
+  $('#cl').innerHTML=os.length?os.map(rowBill).join(''):'<div class="empty">Toque no + para adicionar uma conta.</div>'}
+
+function renderCal(){const y=view.getFullYear(),m=view.getMonth();
+  $('#mt2').textContent=view.toLocaleDateString('pt-BR',{month:'long',year:'numeric'});
+  $('#wd').innerHTML=['D','S','T','Q','Q','S','S'].map(d=>`<div class="wd">${d}</div>`).join('');
+  const os=occ(y,m),by={};os.forEach(o=>(by[o.day]=by[o.day]||[]).push(o));
+  let h='';for(let i=0;i<new Date(y,m,1).getDay();i++)h+='<div class="day off"></div>';
+  for(let d=1;d<=dim(y,m);d++){const a=by[d]||[],k=`${y}-${pad(m+1)}-${pad(d)}`;
+    h+=`<button class="day ${k===iso(new Date())?'today':''} ${k===selDay?'sel':''}" data-day="${k}">${d}${a.length?`<i class="${a.every(o=>o.paid)?'ok':''}"></i>`:''}</button>`}
+  $('#grid').innerHTML=h;
+  $('#dt').textContent=new Date(selDay+'T12:00').toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});
+  const dl=os.filter(o=>o.date===selDay);
+  $('#dl').innerHTML=dl.length?dl.map(rowBill).join(''):'<div class="empty">Sem contas neste dia.</div>'}
+
+function bind(){
+  $$('[data-pay]').forEach(e=>e.onclick=()=>{const [id,key]=e.dataset.pay.split('|'),b=S.bills.find(x=>x.id===id);
+    b.paid=b.paid||{};b.paid[key]=!b.paid[key];save();buzz(18);if(b.paid[key])toast('Conta paga');render()});
+  $$('[data-edit]').forEach(e=>{e.onclick=()=>openBill(e.dataset.edit);e.onkeydown=ev=>{if(ev.key==='Enter')openBill(e.dataset.edit)}});
+  $$('[data-copy]').forEach(e=>e.onclick=()=>{navigator.clipboard.writeText(S.bills.find(x=>x.id===e.dataset.copy).code).then(()=>toast('Código copiado'))});
+  $$('[data-ds]').forEach(e=>e.onclick=()=>{S.spent=S.spent.filter(x=>x.id!==e.dataset.ds);save();render()});
+  $$('[data-day]').forEach(e=>e.onclick=()=>{selDay=e.dataset.day;renderCal();bind()})}
+
+function tab(t){$$('.tab').forEach(e=>e.classList.toggle('on',e.id==='t-'+t));$$('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));scrollTo(0,0)}
+$$('nav button').forEach(b=>b.onclick=()=>tab(b.dataset.t));
+const mv=d=>{view.setMonth(view.getMonth()+d);renderContas();renderCal();bind()};
+$('#pm').onclick=$('#pm2').onclick=()=>mv(-1);$('#nm').onclick=$('#nm2').onclick=()=>mv(1);
+$$('[data-close]').forEach(b=>b.onclick=()=>b.closest('dialog').close());
+
+/* lançamento rápido */
+function quick(){const t=$('#q').value.trim();if(!t)return;
+  const dm=t.match(/\bdia\s*(\d{1,2})\b/i),xm=t.match(/\b(\d{1,2})\s*x\b/i);
+  const rest=t.replace(/\bdia\s*\d{1,2}\b/i,'').replace(/\b\d{1,2}\s*x\b/i,'');
+  const nm=rest.match(/(\d+(?:[.,]\d{1,2})?)/);if(!nm){toast('Faltou o valor. Ex: luz 150');return}
+  const v=parseFloat(nm[1].replace(',','.')),name=rest.replace(nm[0],'').replace(/r\$/i,'').replace(/\s+/g,' ').trim()||'Sem nome',cap=name[0].toUpperCase()+name.slice(1);
+  const n=new Date(),d=dm?Math.min(+dm[1],dim(n.getFullYear(),n.getMonth())):n.getDate(),due=`${n.getFullYear()}-${pad(n.getMonth()+1)}-${pad(d)}`;
+  if(xm&&+xm[1]>1){const c=+xm[1];S.bills.push({id:uid(),name:cap,kind:'parc',n:c,amount:Math.round(v/c*100)/100,due,code:'',paid:{}});toast(`${c} parcelas de ${brl(v/c)}`)}
+  else if(dm){S.bills.push({id:uid(),name:cap,kind:'um',amount:v,due,code:'',paid:{}});toast('Conta salva')}
+  else{S.spent.push({id:uid(),n:cap,v,d:iso(n)});toast('Gasto lançado')}
+  $('#q').value='';save();buzz();render()}
+$('#qgo').onclick=quick;$('#q').onkeydown=e=>{if(e.key==='Enter')quick()};
+
+/* boleto */
+function readBoleto(raw){const d=raw.replace(/\D/g,'');let f,v;
+  if(d.length===47){f=+d.slice(33,37);v=+d.slice(37)/100}else if(d.length===44){f=+d.slice(5,9);v=+d.slice(9,19)/100}else return null;
+  let dt=null;if(f>0){dt=new Date(new Date(1997,9,7).getTime()+f*864e5);while(dt<new Date(Date.now()-400*864e5))dt=new Date(dt.getTime()+9000*864e5)}
+  return {valor:v,date:dt&&iso(dt)}}
+$('#bc').addEventListener('input',()=>{const r=readBoleto($('#bc').value);
+  if(r){if(r.valor&&!$('#bv').value)$('#bv').value=r.valor.toFixed(2);if(r.date)$('#bd').value=r.date;toast('Li o boleto')}});
+
+/* formulário de conta */
+let editing=null;const kind=()=>$('input[name=k]:checked').value;
+function sync(){const p=kind()==='parc';$('#pbox').hidden=!p;
+  $('#vl').textContent=p&&$('#bm').value==='tot'?'Valor total (R$)':p?'Valor da parcela (R$)':'Valor (R$)';
+  $('#dl2').textContent=p?'1ª parcela':'Vencimento';
+  const v=parseFloat($('#bv').value)||0,n=+$('#bn2').value||0;
+  $('#ptot').textContent=p&&v&&n>1?($('#bm').value==='tot'?`${n}x de ${brl(v/n)}`:`Total: ${brl(v*n)} em ${n}x`):''}
+$$('input[name=k],#bm,#bv,#bn2').forEach(e=>e.addEventListener('input',sync));
+function openBill(id,pre={}){editing=id||null;const b=S.bills.find(x=>x.id===id)||{};
+  $('#bt').textContent=id?'Editar conta':'Nova conta';
+  const k=b.kind||(b.rec?'mes':'um');$(`input[name=k][value=${k}]`).checked=true;
+  $('#bn').value=b.name||pre.name||'';$('#bv').value=b.amount??pre.amount??'';$('#bd').value=b.due||pre.due||iso(new Date());
+  $('#bc').value=b.code||pre.code||'';$('#bn2').value=b.n||10;$('#bm').value=b.kind==='parc'?'par':'tot';
+  $('#bdel').hidden=!id;sync();$('#dbill').showModal()}
+$('#fab').onclick=()=>openBill();
+$('#fbill').onsubmit=()=>{const k=kind(),n=+$('#bn2').value||2;let v=parseFloat($('#bv').value)||0;
+  if(k==='parc'&&$('#bm').value==='tot')v=Math.round(v/n*100)/100;
+  const o={name:$('#bn').value.trim(),amount:v,due:$('#bd').value,code:$('#bc').value.trim(),kind:k,n:k==='parc'?n:undefined};delete o.rec;
+  if(editing)Object.assign(S.bills.find(x=>x.id===editing),o);else S.bills.push({id:uid(),paid:{},...o});
+  save();buzz();toast('Conta salva');render()};
+$('#bdel').onclick=()=>{if(confirm('Apagar esta conta e todas as parcelas?')){S.bills=S.bills.filter(x=>x.id!==editing);save();$('#dbill').close();render()}};
+
+/* ajustes */
+function openSet(){accUI();$('#sn').value=S.name;$('#si').value=S.income||'';$('#dset').showModal()}
+$('#gear').onclick=openSet;
+$('#dset').addEventListener('close',()=>{S.name=$('#sn').value.trim();S.income=parseFloat($('#si').value)||0;save();render()});
+$('#snot').onclick=async()=>{if(!('Notification' in window))return toast('Seu navegador não suporta avisos');
+  const p=await Notification.requestPermission();toast(p==='granted'?'Avisos ligados':'Avisos bloqueados');if(p==='granted')notify()};
+$('#sexp').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(S)],{type:'application/json'}));a.download='enduds-backup.json';a.click()};
+$('#simp').onclick=()=>$('#file').click();
+$('#file').onchange=async e=>{try{S={...S,...JSON.parse(await e.target.files[0].text())};save();render();toast('Backup restaurado')}catch(x){toast('Arquivo inválido')}};
+
+/* avisos quando o app abre */
+async function notify(){if(!('Notification' in window)||Notification.permission!=='granted')return;
+  const n=new Date(),t=iso(n),tmd=new Date(n.getTime()+864e5),tm=iso(tmd);
+  const list=occ(n.getFullYear(),n.getMonth()).concat(occ(tmd.getFullYear(),tmd.getMonth()));
+  const reg=await navigator.serviceWorker?.ready;
+  for(const o of list){if(o.paid||(o.date!==t&&o.date!==tm))continue;const k=o.b.id+o.date;if(S.notified[k])continue;S.notified[k]=1;
+    const body=`${brl(o.b.amount)} · ${o.date===t?'vence hoje':'vence amanhã'}`;
+    reg?reg.showNotification(o.b.name,{body,icon:'/icon-192.png'}):new Notification(o.b.name,{body})}
+  save();if(navigator.setAppBadge){const c=list.filter(o=>!o.paid&&o.date<=tm&&o.key===t.slice(0,7)).length;c?navigator.setAppBadge(c):navigator.clearAppBadge()}}
+
+/* .ics com alarme */
+$('#ics').onclick=()=>{const n=new Date();let ev=[];
+  for(let k=0;k<3;k++){const d=new Date(n.getFullYear(),n.getMonth()+k,1);
+    occ(d.getFullYear(),d.getMonth()).filter(o=>!o.paid).forEach(o=>{const s=o.date.replace(/-/g,''),e=iso(new Date(new Date(o.date+'T12:00').getTime()+864e5)).replace(/-/g,'');
+      const p=o.kind==='parc'?` (${o.idx+1}/${o.b.n})`:'';
+      ev.push(`BEGIN:VEVENT\nUID:${o.b.id}-${s}@enduds\nDTSTAMP:${s}T120000Z\nDTSTART;VALUE=DATE:${s}\nDTEND;VALUE=DATE:${e}\nSUMMARY:Pagar ${o.b.name}${p} - ${brl(o.b.amount)}\nBEGIN:VALARM\nACTION:DISPLAY\nDESCRIPTION:Vence amanhã\nTRIGGER:-PT15H\nEND:VALARM\nEND:VEVENT`)})}
+  if(!ev.length)return toast('Sem contas para exportar');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//ENDUDS//PT\n'+ev.join('\n')+'\nEND:VCALENDAR'],{type:'text/calendar'}));a.download='enduds-contas.ics';a.click()};
+
+/* ===== Supabase: preencha as duas linhas abaixo ===== */
+const SB_URL='https://prclthoijgefeaccqiad.supabase.co';
+const SB_KEY='sb_publishable_bpPgTVaLorK_E1h6Fak6fw_Su1Jh_es';
+let sess=null;try{sess=JSON.parse(localStorage.getItem('enduds.sess')||'null')}catch(e){}
+const sbOn=()=>!!(SB_URL&&SB_KEY);
+const setStatus=t=>{const e=$('#accst');if(e)e.textContent=t};
+async function sb(path,opt={},auth=true){
+  const h={apikey:SB_KEY,'Content-Type':'application/json',...(opt.headers||{})};
+  if(auth&&sess)h.Authorization='Bearer '+sess.access_token;
+  const r=await fetch(SB_URL+path,{...opt,headers:h}),t=await r.text();let j=null;try{j=JSON.parse(t)}catch(e){}
+  if(!r.ok)throw new Error((j&&(j.msg||j.error_description||j.message))||'Erro '+r.status);
+  return j}
+function setSess(j){sess={access_token:j.access_token,refresh_token:j.refresh_token,exp:Date.now()+(j.expires_in-60)*1000,email:j.user&&j.user.email,uid:j.user&&j.user.id};localStorage.setItem('enduds.sess',JSON.stringify(sess))}
+async function ensure(){if(!sess)return false;if(Date.now()<sess.exp)return true;
+  try{setSess(await sb('/auth/v1/token?grant_type=refresh_token',{method:'POST',body:JSON.stringify({refresh_token:sess.refresh_token})},false));return true}
+  catch(e){sess=null;localStorage.removeItem('enduds.sess');accUI();return false}}
+let pt;
+function push(){if(!sbOn()||!sess)return;clearTimeout(pt);pt=setTimeout(async()=>{if(!await ensure())return;
+  try{await sb('/rest/v1/enduds_data?on_conflict=user_id',{method:'POST',headers:{Prefer:'resolution=merge-duplicates'},body:JSON.stringify({user_id:sess.uid,data:S,updated_at:new Date().toISOString()})});setStatus('Salvo na nuvem')}
+  catch(e){setStatus('Não sincronizou: '+e.message)}},700)}
+async function pull(){if(!sbOn()||!await ensure())return;
+  try{const r=await sb(`/rest/v1/enduds_data?user_id=eq.${sess.uid}&select=data`);
+    if(r.length){const d=r[0].data||{};
+      if((d.ts||0)>(S.ts||0)){S={...S,...d};try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}render()}
+      else if((S.ts||0)>(d.ts||0))push()}
+    else push();
+    setStatus('Salvo na nuvem')}catch(e){setStatus('Não sincronizou: '+e.message)}}
+function accUI(){const a=$('#acc');if(!a)return;a.hidden=!sbOn();$('#accin').hidden=!!sess;$('#accout').hidden=!sess;if(sess)$('#accmail').textContent='Conectada: '+sess.email}
+async function login(up){const email=$('#ae').value.trim(),pw=$('#ap').value;
+  if(!email||pw.length<6)return setStatus('Use um e-mail e uma senha de 6+ caracteres');
+  try{setStatus('Aguarde…');
+    const j=await sb(up?'/auth/v1/signup':'/auth/v1/token?grant_type=password',{method:'POST',body:JSON.stringify({email,password:pw})},false);
+    if(!j.access_token){setStatus('Conta criada. Confirme pelo e-mail e depois toque em Entrar.');return}
+    setSess(j);accUI();await pull()}catch(e){setStatus(e.message)}}
+$('#ain').onclick=()=>login(false);$('#aup').onclick=()=>login(true);
+$('#aout').onclick=()=>{sess=null;localStorage.removeItem('enduds.sess');accUI();setStatus('')};
+
+/* início */
+const q=new URLSearchParams(location.search);
+render();accUI();pull();
+if(q.get('tab'))tab(q.get('tab'));
+if(q.has('new'))openBill();
+if(q.has('text')||q.has('title')){const txt=(q.get('text')||'')+' '+(q.get('url')||''),r=readBoleto(txt),m=txt.match(/R\$\s*([\d.]+,\d{2})/);
+  tab('contas');openBill(null,{name:q.get('title')||'',code:txt.replace(/\D/g,'').length>=44?txt.trim():'',amount:r?r.valor:m?parseFloat(m[1].replace(/\./g,'').replace(',','.')):'',due:r&&r.date||iso(new Date())});history.replaceState(null,'','/')}
+if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').then(notify));
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){render();notify();pull()}});
+</script>
+</body>
+</html>
